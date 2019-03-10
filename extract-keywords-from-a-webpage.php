@@ -10,5 +10,5 @@ $keywords = array_map( 'trim', $keywords );
 // Remove empty values
 $keywords = array_filter( $keywords );
 
-print_r( $keywords );
+print_r( $keywords ); //Array ( [0] => Gofit First online health and Fitness store in Bahrain )
 ?>
