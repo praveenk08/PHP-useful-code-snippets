@@ -1,0 +1,21 @@
+<?php
+//error_reporting(0);
+include("config.php");
+
+$resultTable=$_GET['board'];
+$year=$_GET['year'];
+
+ header('Content-Type: text/csv; charset=utf-8');  
+      header('Content-Disposition: attachment; filename='.$resultTable.'.csv');  
+      $output = fopen("php://output", "w");  
+      fputcsv($output, array('Mobile No'));  
+      $query = "select mobileno from $resultTable where YEAR(created_date)=".$year;  
+      $result = mysqli_query($con, $query);  
+      while($row = mysqli_fetch_assoc($result))  
+      {  
+           fputcsv($output, $row);  
+      }  
+      fclose($output);  
+die; 
+
+?>
