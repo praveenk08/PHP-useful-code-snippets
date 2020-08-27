@@ -1,0 +1,107 @@
+//Setup Maintenance Mode in CodeIgniter
+
+//STEP 1
+Enable Hooks
+First all you need to enable hooks. Edit the application/config/config.php file and set $config['enable_hooks'] to TRUE.
+
+$config['enable_hooks'] = TRUE;
+
+//STEP 2
+
+Define Maintenance Config
+Edit the application/config/config.php file and define a new config variable for maintenance mode. Insert the following code at the bottom of the config.php file.
+
+/*
+|--------------------------------------------------------------------------
+| Maintenance Mode
+|--------------------------------------------------------------------------
+|
+| For whatever reason sometimes a site needs to be taken offline.
+| Set $config['maintenance_mode'] to TRUE if the site has to be offline
+|
+| $config['maintenance_mode'] = TRUE; // site is offline
+| $config['maintenance_mode'] = FALSE; // site is online
+*/
+$config['maintenance_mode'] = TRUE;
+
+
+//STEP 3
+
+Defining Maintenance Hook
+
+To let the system know about the maintenance hook, edit the application/config/hooks.php file and define hook.
+
+pre_system – Hook point. The hook will be called very early during system execution.
+class – The name of the class wish to invoke.
+function – The method name wish to call.
+filename – The file name containing the class/function.
+filepath – The name of the directory containing hook script.
+
+
+$hook['pre_system'][] = array(
+    'class'    => 'maintenance_hook',
+    'function' => 'offline_check',
+    'filename' => 'maintenance_hook.php',
+    'filepath' => 'hooks'
+);
+
+//STEP 4
+
+Maintenance Hook Class
+Create a new hook file called maintenance_hook.php in the application/hooks/ folder and write Maintenance hook script. The following code checks whether site maintenance mode is ON and load the maintenance page from application views folder.
+
+
+
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * Check whether the site is offline or not.
+ *
+ */
+class Maintenance_hook
+{
+    public function __construct(){
+        log_message('debug','Accessing maintenance hook!');
+    }
+    
+    public function offline_check(){
+        if(file_exists(APPPATH.'config/config.php')){
+            include(APPPATH.'config/config.php');
+            
+            if(isset($config['maintenance_mode']) && $config['maintenance_mode'] === TRUE){
+                include(APPPATH.'views/maintenance.php');
+                exit;
+            }
+        }
+    }
+}
+
+
+//STEP 5
+
+Maintenance Page
+To display a well-designed maintenance page, create a maintenance.php file in the application/views/ directory and insert the HTML.
+
+
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Site Under Maintenance</title>
+    <link href="http://localhost/codeigniter/assets/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg">
+    <h1 class="head text-center">Site Under Maintenance</h1>
+    <div class="container">
+        <div class="content1"> 
+            <img src="http://localhost/codeigniter/assets/images/2.png" alt="under-construction">
+            <p class="text-center">Sorry for the inconvenience. To improve our services, we have momentarily shutdown our site.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+//NOTE
+Enable/Disable Maintenance Mode
+Now you can enable the maintenance mode (offline) by settings $config['maintenance_mode'] = TRUE; To disable the maintenance mode (online), change it to $config['maintenance_mode'] = FALSE;
