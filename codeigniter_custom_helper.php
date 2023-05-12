@@ -397,6 +397,50 @@ if(!function_exists('setFlashData'))
 }
 
 				
+				
+function sendEmail($to,$from,$subject,$message,$cc=array(),$bcc=array('sumishra@panindia.in'),$attachments=array()) {	
+	if(isset($to) && !empty($subject) && !empty($message)){
+		$config = Array(
+			'protocol' => 'smtp',
+			'smtp_host' => 'ssl://smtp.googlemail.com',
+			'smtp_port' => 465,
+			'smtp_user' => '',
+			'smtp_pass' => '',
+			'mailtype'  => 'html',			
+			'charset'   => 'iso-8859-1'
+		);
+		$CI =& get_instance();
+		$CI->load->library('email',$config);
+		$CI->email->set_newline("\r\n");
+		if(isset($from)){
+			$from=array(
+			'name'=>'ABCD',
+			'email'=>'abc@xyz.com'
+			);
+		}
+		$CI->email->from($from['email'], $from['name']); 
+		$CI->email->to($to);
+		if(isset($cc)){	
+			$CI->email->cc($cc);
+		}
+		if(isset($bcc)){
+			$CI->email->bcc($bcc);
+		}
+		if(count($attachments)>0){
+			foreach($attachments as $attachment){
+				$CI->email->attach($attachment);
+			}
+		}
+ 		$CI->email->subject($subject); 
+		$CI->email->message($message); 
+		$sent=$CI->email->send();
+		return 1;
+	}
+	return false;
+	
+}
+				
+				
 
 				
   
